@@ -12,16 +12,21 @@ sub_list = dict()
 
 
 def parseSubstitution(sub_string):
+	"""
+	Takes in a string and creates a dictionary to keep track of the mappings
+	that the user specifies.  It returns a dictionary of translations
+	"""
 	begin=0
 	second=False
 	replace=None
 	rep_with=None
+	sub_list
 	for i in range(len(sub_string)):
 		if sub_string[i]==":" and second==False:
 			replace = sub_string[begin:i]
 			begin = i+1
 			second=True
-		if second:
+		elif second:
 			if sub_string[i]=='\n':
 				rep_with = sub_string[begin:i]
 				second=False
@@ -29,22 +34,35 @@ def parseSubstitution(sub_string):
 				toAdd = (replace,rep_with)
 				sub_list[replace]=rep_with
 	print sub_list
+	return sub_list
+
+def mutateWord(word,fileDict):
+	"""
+	This method takes in a single word as a string and mutates it according
+	to the dictionary global dictionary that has been populated in a previous 
+	method. Adds to the file that is getting saved to.
+	"""
+	pass
 
 def main():
 	parser = argparse.ArgumentParser()
+	verbinteract = parser.add_mutually_exclusive_group()
 	parser.add_argument("-m","--mutate",
 		help="mutate the word list",action="store_true")
 	parser.add_argument("-s","--substitute",
 		help="specifies a file of mutations",action="store_true")
-	parser.add_argument("substitutionfiles",nargs='?',
+	parser.add_argument("subfiles",nargs='?',
 		type=argparse.FileType('r'))
-	parser.add_argument("-v","--verbose",
+	verbinteract.add_argument("-v","--verbose",
 		help="display verbose output",action="store_true")
+	verbinteract.add_argument("-i","--interactive",
+		help="interactive mode", action="store_true")
 	arguments = parser.parse_args()
 	if arguments.mutate:
 		m=True
-	subs = arguments.substitutionfiles.name
+	subs = arguments.subfiles.name
 	file=open(subs)
+	print subs
 	garbage = file.read()
 	parseSubstitution(garbage)
 	file.close()
@@ -99,6 +117,5 @@ def mutate():
 	f = open("pass.txt","w")
 	for x in words:
 		f.write(x)
+	f.close()
 #print "Done."
-
-#mutate()

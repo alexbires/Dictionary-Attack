@@ -42,7 +42,17 @@ def mutateWord(word,fileDict):
 	to the dictionary global dictionary that has been populated in a previous 
 	method. Adds to the file that is getting saved to.
 	"""
-	pass
+	files = open(fileDict,'w')
+	iterate = iter(sub_list)
+	for x in iterate:
+		word=word.replace(x,sub_list[x])
+		tofile = word+"\n"
+		#try:
+		files.write(tofile)
+		#except IOError:
+		#pass
+		#the try and pass is for later to make sure the code fails gracefully
+	files.close()
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -69,6 +79,8 @@ def main():
 	print garbage
 
 main()
+mutateWord("sponglea","dict.txt")
+#main()
 #try:
 #	page = urllib.urlopen(sys.argv[1]) # for verification
 #except IOError:

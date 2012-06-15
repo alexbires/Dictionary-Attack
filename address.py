@@ -1,12 +1,13 @@
 import urllib, sys, os, string
 import argparse
+import json
 # sys.argv[1] is the domain
 # sys.argv[2] is the relative path name of cewl.rb
 # sys.argv[3...] previously existing password list(s) -- preferably unmutated
-# if sys.argv[-1] is -m, perform mutations on the password list
 
 # diggity the website's name
 m=False
+end=False
 s=False
 sub_list = dict()
 
@@ -19,7 +20,6 @@ def parseSubstitution(sub_string):
 	begin=0
 	second=False
 	replace=None
-	rep_with=None
 	sub_list
 	for i in range(len(sub_string)):
 		if sub_string[i]==":" and second==False:
@@ -31,12 +31,10 @@ def parseSubstitution(sub_string):
 				rep_with = sub_string[begin:i]
 				second=False
 				begin = i+1
-				toAdd = (replace,rep_with)
 				sub_list[replace]=rep_with
-	print sub_list
 	return sub_list
 
-def mutateWord(word,fileDict):
+def mutateWord(word,fileDict,end=False):
 	"""
 	This method takes in a single word as a string and mutates it according
 	to the dictionary global dictionary that has been populated in a previous 
@@ -45,14 +43,66 @@ def mutateWord(word,fileDict):
 	files = open(fileDict,'w')
 	iterate = iter(sub_list)
 	for x in iterate:
+		before = word
 		word=word.replace(x,sub_list[x])
 		tofile = word+"\n"
-		#try:
-		files.write(tofile)
-		#except IOError:
-		#pass
-		#the try and pass is for later to make sure the code fails gracefully
+		if (not before is word) and not end:
+			try:
+				files.write(tofile)
+			except IOError:
+				pass
+	if end:
+		files.write(word + "\n")
 	files.close()
+
+def interactive():
+	print "Do you have a base dictionary already? [Y/n]"
+	has_dict = raw_input()
+	if (has_dict == "yes"):
+		print "Enter in a file name"
+		raw_file = raw_input()
+	print "Do you have a file of substitions? [Y/n]"
+	has_sub_file = raw_input()
+	if(has_sub_file == "yes"):
+		pass
+
+def compl():
+	print "in compl"
+
+def parseTwitter():
+	url="http://search.twitter.com/search.json?q=%40magesmiter"
+#	page = urllib.urlopen(sys.argv[1]) # for verification
+	results = urllib.urlopen(url)
+	###iterate = iter(sub_list)
+	#print results.type
+	#results = results.readline()
+	#results = results.split(",")
+	#k=0
+#	for i in range(len(results)):
+#		if results[i]=='{':
+#			if i==0:
+#				results = results[:1]+'\n'+results[1:]
+#				i=i+1
+#			else:
+#				results = results[:i]+'\n'+results[i:]
+#				print i
+#				k=k+1
+#				i=i+1
+#	print results
+#	print k
+	#print results[1]
+	results = json.load(results)
+	iterator = iter(results)
+	switch_dict = {"completed_in":compl,}
+	for i in iterator:
+		print i
+		try:
+			switch_dict[i]()
+		except KeyError:
+			pass
+
+	print type(iterator)
+parseTwitter()
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -63,6 +113,9 @@ def main():
 		help="specifies a file of mutations",action="store_true")
 	parser.add_argument("subfiles",nargs='?',
 		type=argparse.FileType('r'))
+	parser.add_argument("-e","--end",
+		help="only add the end result of mutations to the dictionary",
+		action="store_true")
 	verbinteract.add_argument("-v","--verbose",
 		help="display verbose output",action="store_true")
 	verbinteract.add_argument("-i","--interactive",
@@ -70,32 +123,23 @@ def main():
 	arguments = parser.parse_args()
 	if arguments.mutate:
 		m=True
+	if arguments.end:
+		end = True
 	subs = arguments.subfiles.name
 	file=open(subs)
-	print subs
 	garbage = file.read()
 	parseSubstitution(garbage)
 	file.close()
-	print garbage
+	if arguments.interactive:
+		interactive()
+	#if argv
+	os.system("./" + sys.argv[2] + " " + sys.argv[1] + " -d 1 -w tmp.txt") 
 
-main()
-mutateWord("sponglea","dict.txt")
+#main()
+#mutateWord("sponglea","dict.txt")
 #main()
 #try:
 #	page = urllib.urlopen(sys.argv[1]) # for verification
-#except IOError:
-#	print "herro"
-#except IndexError:
-#	print "index error"
-#print "Site verified."
-"""if sys.argv[-1] == "-m":
-	m = True
-	sys.argv = sys.argv[:-1]
-	if v:print "Mutations enabled."
-else:
-	m = False
-	print "Mutations disabled."
-"""
 def runCewl():
 	print "cewl beginning."
 	#fires off cewl
@@ -105,8 +149,6 @@ def runCewl():
 	for x in range(4,len(sys.argv)):
 		cmd += sys.argv[x] + " "
 	os.system(cmd + "> pass.txt")
-	print "cat finished."
-#runCewl()
 def mutate():
 	print "Mutations started."
 	f = open("pass.txt","r") 
@@ -130,4 +172,3 @@ def mutate():
 	for x in words:
 		f.write(x)
 	f.close()
-#print "Done."

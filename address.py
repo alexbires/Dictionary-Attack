@@ -1,15 +1,9 @@
 import urllib, sys, os, string
 import argparse
 import json
-# sys.argv[1] is the domain
-# sys.argv[2] is the relative path name of cewl.rb
-# sys.argv[3...] previously existing password list(s) -- preferably unmutated
 
-# diggity the website's name
-m=False
-end=False
-s=False
 sub_list = dict()
+userlist = [] #This is for a list of users used by the spideruser method
 
 def parseSubstitution(sub_string):
 	"""
@@ -95,12 +89,26 @@ def result(intake):
 			print i
 			s_dict[i]()
 
+def spiderUser(user,depth):
+	"""
+	Goes from username to username and recursively spiders each username for
+	a specified depth
+	"""
+	print type(user)
+	if(depth == 0):
+		return
+	if(userlist.count(user) == 0):
+		userlist.append(user)
+	
+		
+
 def parseTwitter(user):
 	"""
 	This method is being split up later on but for the moment it is being used
 	to scrape tweets from specific usernames and find words that would be good
 	candidates for the custom dictionary.
 	"""
+	print type(user)
 	url="http://search.twitter.com/search.json?q=%40"
 	url = url + user
 	results = urllib.urlopen(url)
@@ -121,6 +129,7 @@ def parseTwitter(user):
 			pass
 		except TypeError:
 			pass
+	spiderUser(user,1000000)
 
 #parseTwitter("_teresahu")
 parseTwitter("HuskyStarcraft")

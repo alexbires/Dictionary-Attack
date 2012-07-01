@@ -11,7 +11,6 @@ end=False
 s=False
 sub_list = dict()
 
-
 def parseSubstitution(sub_string):
 	"""
 	Takes in a string and creates a dictionary to keep track of the mappings
@@ -56,6 +55,11 @@ def mutateWord(word,fileDict,end=False):
 	files.close()
 
 def interactive():
+	"""
+	This method guides the user through all of the options that this program
+	has.  This is going to be put on the backburner until at least the twitter
+	part is done with.
+	"""
 	print "Do you have a base dictionary already? [Y/n]"
 	has_dict = raw_input()
 	if (has_dict == "yes"):
@@ -66,43 +70,60 @@ def interactive():
 	if(has_sub_file == "yes"):
 		pass
 
+"""methods for parsing through the twitter json object"""
+def lang():
+	print ""
+def user_name():
+	pass
 def compl():
-	print "in compl"
+	pass
+def max_str():
+	pass
+def since_str():
+	pass
+def page():
+	pass
+def since():
+	pass
+def result(intake):
+	s_dict={"iso_language_code":lang,
+			"to_user_name":user_name,}
+	print intake
+	for x in intake:
+		x_iter = iter(x)
+		for i in x_iter:
+			print i
+			s_dict[i]()
 
-def parseTwitter():
-	url="http://search.twitter.com/search.json?q=%40magesmiter"
-#	page = urllib.urlopen(sys.argv[1]) # for verification
+def parseTwitter(user):
+	"""
+	This method is being split up later on but for the moment it is being used
+	to scrape tweets from specific usernames and find words that would be good
+	candidates for the custom dictionary.
+	"""
+	url="http://search.twitter.com/search.json?q=%40"
+	url = url + user
 	results = urllib.urlopen(url)
-	###iterate = iter(sub_list)
-	#print results.type
-	#results = results.readline()
-	#results = results.split(",")
-	#k=0
-#	for i in range(len(results)):
-#		if results[i]=='{':
-#			if i==0:
-#				results = results[:1]+'\n'+results[1:]
-#				i=i+1
-#			else:
-#				results = results[:i]+'\n'+results[i:]
-#				print i
-#				k=k+1
-#				i=i+1
-#	print results
-#	print k
-	#print results[1]
 	results = json.load(results)
 	iterator = iter(results)
-	switch_dict = {"completed_in":compl,}
+	switch_dict = {"completed_in":compl,
+				   "max_id_str":max_str,
+				   "since_id_str":since_str,
+				   "page":page,
+				   "since_id":since,}
 	for i in iterator:
-		print i
 		try:
-			switch_dict[i]()
+			if i == "results":
+				result(results[i])
+			else:
+				switch_dict[i]()
 		except KeyError:
 			pass
+		except TypeError:
+			pass
 
-	print type(iterator)
-parseTwitter()
+#parseTwitter("_teresahu")
+parseTwitter("HuskyStarcraft")
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -138,8 +159,6 @@ def main():
 #main()
 #mutateWord("sponglea","dict.txt")
 #main()
-#try:
-#	page = urllib.urlopen(sys.argv[1]) # for verification
 def runCewl():
 	print "cewl beginning."
 	#fires off cewl

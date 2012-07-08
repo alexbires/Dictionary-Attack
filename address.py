@@ -4,6 +4,7 @@ import json
 
 sub_list = dict()
 userlist = [] #This is for a list of users used by the spideruser method
+print type(userlist)
 
 def parseSubstitution(sub_string):
 	"""

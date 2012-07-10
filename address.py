@@ -80,28 +80,40 @@ def page():
 	pass
 def since():
 	pass
+
+def from_user(input):
+	print "in from_user"
+
 def result(intake):
 	s_dict={"iso_language_code":lang,
 			"to_user_name":user_name,}
-	print intake
+	#print intake
 	for x in intake:
 		x_iter = iter(x)
 		for i in x_iter:
-			print i
-			s_dict[i]()
+			#print i
+			if i=="from_user":
+				from_user()
+			else:
+				s_dict[i]()
 
 def spiderUser(user,depth):
 	"""
-	Goes from username to username and recursively spiders each username for
-	a specified depth
+	Starts searching twitter with the specified user name.  When results are 
+	returned that contain a different user, that user will be spidered with 
+	the depth setting as depth -1. 
+	If depth is 0, the method will return.
 	"""
 	print type(user)
 	if(depth == 0):
 		return
 	if(userlist.count(user) == 0):
 		userlist.append(user)
-	
-		
+	url="http://search.twitter.com/search.json?q=%40"
+	try:
+		url=url+user
+	except TypeError:
+		pass
 
 def parseTwitter(user):
 	"""
@@ -130,9 +142,8 @@ def parseTwitter(user):
 			pass
 		except TypeError:
 			pass
-	spiderUser(user,1000000)
+	spiderUser(user,1)
 
-#parseTwitter("_teresahu")
 parseTwitter("HuskyStarcraft")
 
 def main():

@@ -4,7 +4,7 @@ import json
 
 sub_list = dict()
 userlist = [] #This is for a list of users used by the spideruser method
-print type(userlist)
+spiderCalls = 0
 
 def parseSubstitution(sub_string):
 	"""
@@ -66,9 +66,25 @@ def interactive():
 		pass
 
 """methods for parsing through the twitter json object"""
-def lang():
-	print ""
-def user_name():
+def lang(lang):
+	pass
+def to_user_name(name):
+	"""Defines what to do when to_user_name appears as a key value in the 
+	results part of the json object.  This will check if name is in the global
+	list userlist and if not will add it and then spider it"""
+	print name
+	if userlist.count(name)==0:
+		userlist.append(name)
+		spiderUser(name,100)
+		print "userlist is: ",userlist
+	
+def from_user(name):
+	print name,":is from user"
+def user_id(i):
+	pass
+def image(i):
+	pass
+def from_usr_name(i):
 	pass
 def compl():
 	pass
@@ -81,21 +97,22 @@ def page():
 def since():
 	pass
 
-def from_user(input):
-	print "in from_user"
-
 def result(intake):
+	#intake is a list
 	s_dict={"iso_language_code":lang,
-			"to_user_name":user_name,}
-	#print intake
+			"to_user_name":to_user_name,
+			"to_user_id_str":user_id,
+			"profile_image_url_http":image,
+			"from_user_name":from_usr_name,
+			"from_user":from_user}
 	for x in intake:
 		x_iter = iter(x)
+		print x
 		for i in x_iter:
-			#print i
-			if i=="from_user":
-				from_user()
-			else:
-				s_dict[i]()
+			print i
+			i = str(i)
+			#x is a dictionary for the key value pairs of result
+			s_dict[i](str(x[i]))
 
 def spiderUser(user,depth):
 	"""
@@ -104,16 +121,13 @@ def spiderUser(user,depth):
 	the depth setting as depth -1. 
 	If depth is 0, the method will return.
 	"""
-	print type(user)
+	print "in spider user"
 	if(depth == 0):
 		return
 	if(userlist.count(user) == 0):
 		userlist.append(user)
 	url="http://search.twitter.com/search.json?q=%40"
-	try:
-		url=url+user
-	except TypeError:
-		pass
+	url=url+user
 
 def parseTwitter(user):
 	"""
@@ -121,7 +135,6 @@ def parseTwitter(user):
 	to scrape tweets from specific usernames and find words that would be good
 	candidates for the custom dictionary.
 	"""
-	print type(user)
 	url="http://search.twitter.com/search.json?q=%40"
 	url = url + user
 	results = urllib.urlopen(url)
@@ -142,7 +155,7 @@ def parseTwitter(user):
 			pass
 		except TypeError:
 			pass
-	spiderUser(user,1)
+	#spiderUser(user,1)
 
 parseTwitter("HuskyStarcraft")
 
@@ -177,9 +190,7 @@ def main():
 	#if argv
 	os.system("./" + sys.argv[2] + " " + sys.argv[1] + " -d 1 -w tmp.txt") 
 
-#main()
 #mutateWord("sponglea","dict.txt")
-#main()
 def runCewl():
 	print "cewl beginning."
 	#fires off cewl

@@ -1,16 +1,15 @@
 import urllib, sys, os, string
-import argparse
 import json
-import twitter
 
 sub_list = dict()
 userlist = [] #This is for a list of users used by the spideruser method
-spiderCalls = 0
+limit = 0
 
 def parseSubstitution(sub_string):
 	"""
 	Takes in a string and creates a dictionary to keep track of the mappings
-	that the user specifies.  It returns a dictionary of translations
+	that the user specifiesday 8am-5pm, Thur  It returns a dictionary of translations
+	The format of the string is string:whatToReplaceWith
 	"""
 	begin=0
 	second=False
@@ -29,7 +28,7 @@ def parseSubstitution(sub_string):
 				sub_list[replace]=rep_with
 	return sub_list
 
-def mutateWord(word,fileDict,end=False):
+def mutateWordold(word,fileDict,end=False):
 	"""
 	This method takes in a single word as a string and mutates it according
 	to the dictionary global dictionary that has been populated in a previous 
@@ -50,13 +49,47 @@ def mutateWord(word,fileDict,end=False):
 		files.write(word + "\n")
 	files.close()
 
+def mutateWord(word,step=False):
+	print word
+	iterator = iter(sub_list)
+	for x in iterator:
+		word = word.replace(x,sub_list[x])
+		print word
 
 def main():
-	file=open(subs)
-	garbage = file.read()
-	parseSubstitution(garbage)
-	file.close()
-
+	sub_list["o"]="derpina"
+	mutateWord("hello")
+	step = False
+	args = sys.argv
+	argLength = len(sys.argv)
+	for i in range(len(sys.argv)):
+		try:
+			if args[i] == "-h":
+				print "Address.py is made to take in a word list, do mutations on it, and then"
+				print "spit you back a new word list with good possible passwords based on"
+				print "the input given"
+			elif args[i] == "-in":#in is the base word list
+				filename = args[i]
+				i+=1
+				wordlist = open(args[i])
+				contents = wordlist.read()
+				wordlist.close()
+			elif args[i] == "-m":
+				mutateFile = args[i]
+				i+=1
+				mutations = open(args[i])
+				contents = mutations.read()
+				mutations.close()
+			elif args[i] == "-l" or args[i] == "--limit":
+				i+=1
+				limit = args[i]
+		except IOError:
+			print "Enter a valid file"
+			fileName = raw_input("Enter a valid file\n")
+			print fileName
+		except IndexError:
+			pass#need to just end the execution
+main()
 #mutateWord("sponglea","dict.txt")
 def runCewl():
 	print "cewl beginning."
